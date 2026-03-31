@@ -13,8 +13,8 @@ set -e
 # ============================================================
 # VARIABLES — fill these in before running
 # ============================================================
-PROJECT_ID="my-project-31-491314"
-REGION="us-central1"
+PROJECT_ID="YOUR-PROJECT-ID"
+REGION="YOUR-LOCATION"
 APP_NAME="statquery"
 GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
 ALLOYDB_PASSWORD="YOUR_ALLOYDB_PASSWORD"
