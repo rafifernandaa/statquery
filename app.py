@@ -1,10 +1,3 @@
-# Copyright 2025 Rafi Fernanda Aldin
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# StatQuery: Natural Language Interface for Statistical Methods Catalog
-# Track 3 - Gen AI Academy APAC | AlloyDB AI Project Submission
-# Project: my-project-31-491314
-
 import os
 import json
 import traceback
@@ -141,7 +134,7 @@ def natural_language_query():
                                   description || '" and use case: "' || use_case ||
                                   '" match or relate to this user request: "' || :query ||
                                   '"? Answer yes only if there is a genuine relevance.',
-                        model_id => 'gemini-2.0-flash'
+                        model_id => 'gemini-3-flash-preview'
                       )
                 ORDER BY method_vector <=> embedding('text-embedding-005', :query)::vector
                 LIMIT 6
@@ -217,7 +210,7 @@ Rules:
 
     try:
         response = genai_client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3-flash-preview",
             contents=prompt
         )
         generated_sql = response.text.strip().replace("```sql", "").replace("```", "").strip()
@@ -315,7 +308,7 @@ Be concise, direct, and educational. No markdown, no bullet points."""
 
     try:
         response = genai_client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3-flash-preview",
             contents=prompt
         )
         return response.text.strip()
