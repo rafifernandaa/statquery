@@ -233,15 +233,6 @@ python app.py
 
 ---
 
-## Author
-
-**Rafi Fernanda Aldin**
-Bachelor of Statistics — 6th Semester
-Data Science · Psychometrics · Cloud Data Systems
-*Turning Uncertainty Into Insight*
-
----
-
 ## License
 
 Apache 2.0
