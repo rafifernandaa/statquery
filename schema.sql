@@ -1,7 +1,6 @@
 -- ============================================================
 -- StatQuery: Statistical Methods Catalog
 -- AlloyDB for PostgreSQL Schema
--- Project: my-project-31-491314
 -- ============================================================
 
 -- Enable pgvector extension (AlloyDB has this built-in)
