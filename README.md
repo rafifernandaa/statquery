@@ -1,7 +1,6 @@
 # StatQuery 📊
 
 **Natural Language Interface for a Statistical Methods Catalog**
-> Track 3 — Gen AI Academy APAC | AlloyDB AI Project Submission
 
 **Use case:** Querying a curated statistical methods catalog (IRT, SEM, Regression, Bayesian, etc.) using natural language powered by AlloyDB AI.
 
@@ -30,7 +29,7 @@ Flask App (Cloud Run)
      ├── /api/nl-query  ──→  AlloyDB AI
      │                          ├── embedding('text-embedding-005', query)
      │                          ├── vector similarity search (<=>)
-     │                          └── ai.if(model_id='gemini-2.0-flash')
+     │                          └── ai.if(model_id='gemini-3-flash-preview')
      │
      ├── /api/nl-to-sql ──→  Gemini API (NL → SQL translation)
      │
@@ -80,7 +79,7 @@ ORDER BY method_vector <=> embedding('text-embedding-005', :query)::vector
 -- AlloyDB calls Gemini inline to validate semantic relevance
 AND ai.if(
     prompt => 'Does this method: "' || name || '" match the request: "' || :query || '"?',
-    model_id => 'gemini-2.0-flash'
+    model_id => 'gemini-3-flash-preview'
 )
 ```
 
@@ -98,7 +97,7 @@ statquery/
 ├── requirements.txt
 ├── Dockerfile
 ├── deploy.sh           # Full deploy script (AlloyDB setup → Cloud Run)
-├── .env.example        # Environment variable template
+├── .env                # Environment variables (not committed to Git)
 ├── .gitignore
 └── templates/
     └── app.html        # Single-file frontend (HTML + CSS + JS)
@@ -135,14 +134,22 @@ Or paste the contents of `schema.sql` directly into **AlloyDB Studio → SQL Edi
 
 ### Step 3: Enable AlloyDB AI Natural Language
 
-In AlloyDB Studio, run:
+First, grant the AlloyDB service account the Vertex AI User role so it can call Gemini inline:
+```bash
+gcloud projects add-iam-policy-binding my-project-31-491314 \
+  --member="serviceAccount:c-676289354133-97e4ab8c@gcp-sa-alloydb.iam.gserviceaccount.com" \
+  --role="roles/aiplatform.user"
+```
+
+Then in **AlloyDB Studio → SQL Editor**, register the Gemini model:
 ```sql
--- Configure Gemini model for ai.if() and embedding()
-CALL google_ml_integration.create_model_config(
-  model_id => 'gemini-2.0-flash',
+CALL google_ml.create_model(
+  model_id => 'gemini-3-flash-preview',
+  model_request_url => 'https://aiplatform.googleapis.com/v1/projects/my-project-31-491314/locations/global/publishers/google/models/gemini-3-flash-preview:generateContent',
+  model_qualified_name => 'gemini-3-flash-preview',
   model_provider => 'google',
-  model_type => 'text',
-  model_endpoint => 'https://aiplatform.googleapis.com/v1/projects/my-project-31-491314/locations/us-central1/publishers/google/models/gemini-2.0-flash:generateContent'
+  model_type => 'llm',
+  model_auth_type => 'alloydb_service_agent_iam'
 );
 ```
 
@@ -166,6 +173,7 @@ gcloud beta run deploy statquery \
   --allow-unauthenticated \
   --vpc-egress=all-traffic \
   --memory=1Gi \
+  --clear-base-image \
   --set-env-vars GEMINI_API_KEY=YOUR_KEY,DATABASE_URL=postgresql+pg8000://postgres:YOUR_PASS@YOUR_IP:5432/postgres
 ```
 
@@ -177,7 +185,7 @@ gcloud run logs read statquery --region=us-central1 --limit=50
 
 # Test locally (optional)
 pip install -r requirements.txt
-cp .env.example .env  # fill in your values
+# make sure .env is filled with your values
 python app.py
 ```
 
@@ -217,7 +225,7 @@ python app.py
 | Component | Technology |
 |---|---|
 | Database | AlloyDB for PostgreSQL (Google Cloud) |
-| AI (in-database) | AlloyDB AI: `embedding()` + `ai.if()` + Gemini 2.0 Flash |
+| AI (in-database) | AlloyDB AI: `embedding()` + `ai.if()` + Gemini 3 Flash Preview |
 | Backend | Python 3.12, Flask, SQLAlchemy + pg8000 |
 | Frontend | Single-file HTML/CSS/JS (Space Mono + Syne fonts) |
 | Deployment | Cloud Run (source deploy via `gcloud beta run deploy`) |
