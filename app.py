@@ -1,10 +1,3 @@
-# Copyright 2025 Rafi Fernanda Aldin
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# StatQuery: Natural Language Interface for Statistical Methods Catalog
-# Track 3 - Gen AI Academy APAC | AlloyDB AI Project Submission
-# Project: my-project-31-491314
-
 import os
 import json
 import traceback
